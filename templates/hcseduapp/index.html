@@ -1,0 +1,17 @@
+{% extends 'hcseduapp/base.html'%}
+{% load staticfiles %}
+  {% block title_block %}
+    Home
+  {% endblock %}
+
+  {% block body_block %}
+  <div class="jumbotron">
+    <h1>Start Your Training!</h1>
+    <div class="container">
+        <p class="lead">Explore Human-Centred Security Here.</p>
+        <h1>{{ bold_message }}</h1>
+        <p><a class="btn btn-lg btn-success" href="{% url 'question' %}" role="button">Start Training</a></p>
+        <p><a class="btn btn-lg " href="" role="button">Training History</a></p>
+    </div>
+  </div>
+  {% endblock %}

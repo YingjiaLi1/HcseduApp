@@ -1,0 +1,36 @@
+{% extends 'hcseduapp/base.html'%}
+{% load staticfiles %}
+  {% block title_block %}
+    {{ question.questionid }}
+  {% endblock %}
+
+  {% block body_block %}
+
+  <div class="container">
+    <div class="jumbotron">
+      <p class="lead">Q {{ question.questionid }}</p>
+      <p class="lead">{{ question.description }}adfadfafds</p>
+
+      {% for video in question %}
+      <div class="container">
+        <div class="row">
+          <video controls width='100%'>
+            <source src="{{ MEDIA_URL }}{{ recipe.video_file}}" type="video/mp4"> </source>
+            <source src="{{ MEDIA_URL }}{{ recipe.video_file}}" type="video/webm"> </source>
+            <source src="{{ MEDIA_URL }}{{ recipe.video_file}}" type="video/ogg"> </source>
+          </video>
+        </div>
+      </div>
+      {% endfor %}
+
+      {% for image in question %}
+      <div class="jumbotron">
+        <img src="{{ MEDIA_URL }}{{recipe.thumbnail }}" alt="{{ recipe.title }}">
+      </div>
+      {% endfor %}
+
+
+      <a class="btn btn-lg btn-primary" href="https://v4-alpha.getbootstrap.com/components/navbar/" role="button">Submit</a>
+    </div>
+  </div>
+  {% endblock %}

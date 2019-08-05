@@ -1,0 +1,59 @@
+{% extends 'hcseduapp/base.html' %}
+{% load staticfiles %}
+{% block title_block %}
+    {{ curr_question.questionid }}
+{% endblock %}
+
+
+{% block body_block %}
+
+    <div class="container">
+    <div class="jumbotron">
+        <h3 align="left" id="question">Q. {{ curr_question.questionid }}</h3>
+
+        <div class="jumbotron" id="jumbotron1_content">
+            <p class="lead">{{ curr_question.description }}</p>
+
+            {% if curr_questions.video %}
+                <div class="container">
+                    <div class="row">
+                        <video controls width='100%'>
+                        </video>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if curr_question.image %}
+                <div class="jumbotron">
+                    <img src="{{ MEDIA_URL }}{{ curr_question.image }}" alt="{{ curr_question.image }}">
+                </div>
+            {% endif %}
+
+            <div class="jumbotron">
+
+                {% if curr_question.type == "Free Text" %}
+                    <textarea required type="text" name="{{ field.name }}" placeholder="{{ field.label }}" rows="8"
+                              cols="80"></textarea>
+                {% elif curr_question.type == "Multiple Choice" %}
+                    {% for option in multi_options %}
+                        <table class="table">
+                        </table>
+                    {% endfor %}
+                {% elif curr_question.type == "Assertion Reason" %}
+                    {% for option in assrea_options %}
+                        <table class="table">
+                        </table>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+        </div>
+        <div>
+            <button class="btn btn-lg btn-primary" id="button" href="" role="button" type="submit" >Submit</button>
+        </div>
+
+
+    </div>
+</div>
+
+{% endblock %}
