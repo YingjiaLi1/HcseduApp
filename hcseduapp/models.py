@@ -59,7 +59,7 @@ class Question(models.Model):
 class Finished_Questions(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    answer = models.CharField(max_length=2000)
+    answer = models.CharField(max_length=2000,default=None)
     score = models.IntegerField(blank=False, default=0)
 
     def __str__(self):
