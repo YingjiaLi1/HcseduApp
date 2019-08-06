@@ -30,7 +30,7 @@ SECRET_KEY = 't(z$k&^%fw=n=d)w@&swc!8!o&z)!8%m0w3c+!=!yirmr+&_tn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['http://yingjiali.pythonanywhere.com/']
 
 
 # Application definition
