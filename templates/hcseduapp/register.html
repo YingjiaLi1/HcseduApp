@@ -1,0 +1,74 @@
+{% extends 'hcseduapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+  Register
+{% endblock %}
+
+{% block body_block %}
+<div class="container">
+    {% if registered %}
+        <strong>Thank you for registering!</strong>
+        <div >
+          <button class="btn btn-lg btn-primary" type="submit" name="submit"><a href="{% url 'login' %}">Login</a></button>
+        </div>
+    {% else %}
+
+        <div class="container">
+        <div class="jumbotron">
+            <h3  align="center">Sign up</h3>
+          {% for error in user_form.errors %}
+            <div class="alert alert-danger" role="alert">
+              <strong>Required</strong> {{error}}
+            </div>
+          {% endfor %}
+          {% for error in profile_form.errors %}
+            <div class="alert alert-danger" role="alert">
+              <strong>Required</strong> {{error}}
+            </div>
+          {% endfor %}
+        </div>
+
+
+          <form id="user_form" method="post" action="{% url 'register' %}" enctype="multipart/form-data">
+            <div>
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="form-group">
+                        <input required type="text" class="form-control" name="username" size="50" placeholder="username">
+                     </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-group">
+                        <input required type="password" class="form-control" name="password" size="50" placeholder="password">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                     <div class="form-group">
+                        <input required type="email" class="form-control" name="email" size="50" placeholder="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-group">
+                        <input class="file-input-hide" id="input_picture" size="50" required type="file" accept="image/*" name="picture">
+                    </div>
+                </div>
+
+
+                <div class="jumbotron">
+                    <button class="btn btn-lg btn-primary" type="submit" name="submit">Register</button>
+                </div>
+
+
+            </div>
+          </form>
+      </div>
+
+
+
+    {% endif %}
+    </div>
+{% endblock %}

@@ -48,8 +48,8 @@ class Question(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     type = models.CharField(max_length=30, choices=TYPE_CHOICES, default='default')
     linkedstatus = models.BooleanField(choices=BOOL_CHOICES, default=False)
-    video = models.FileField(upload_to="questions", blank=True, verbose_name='Video Upload', validators=[FileExtensionValidator(allowed_extensions=['mp4','webm','ogg'])])
-    image = models.FileField(upload_to="questions", blank=True, verbose_name='Thumbnail Upload', validators=[FileExtensionValidator(allowed_extensions=['png','jpeg','jpg'])])
+    video = models.CharField(max_length=50, blank=True)
+    image = models.CharField(max_length=50, blank=True)
     explanation = models.CharField(max_length=2000, blank=True, default="null")
 
     def __str__(self):

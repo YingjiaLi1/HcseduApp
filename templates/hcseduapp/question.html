@@ -11,29 +11,27 @@
     <div class="jumbotron">
         <h3 align="left" id="question">Q. {{ curr_question.questionid }}</h3>
 
-        <div class="jumbotron" id="jumbotron1_content">
+        <div class="jumbotron" id="jumbotron_content">
+            <h5 align="left">Topic: {{ curr_question.topic }}</h5>
             <p class="lead">{{ curr_question.description }}</p>
 
             {% if curr_questions.video %}
-                <div class="container">
-                    <div class="row">
-                        <video controls width='100%'>
-                            <source src="{{ MEDIA_URL }}{{ curr_question.video }}" type="video/mp4"></source>
-                            <source src="{{ MEDIA_URL }}{{ curr_question.video }}" type="video/webm"></source>
-                            <source src="{{ MEDIA_URL }}{{ curr_question.video }}" type="video/ogg"></source>
-                        </video>
-                    </div>
+                <div class="row">
+                    <video controls width='100%'>
+                        <source src="{{ MEDIA_URL }}{{ curr_question.video }}" type="video/mp4"></source>
+                        <source src="{{ MEDIA_URL }}{{ curr_question.video }}" type="video/webm"></source>
+                        <source src="{{ MEDIA_URL }}{{ curr_question.video }}" type="video/ogg"></source>
+                    </video>
                 </div>
             {% endif %}
 
             {% if curr_question.image %}
-                <div class="jumbotron">
+                <div align="center">
                     <img src="{{ MEDIA_URL }}{{ curr_question.image }}" alt="{{ curr_question.image }}">
                 </div>
             {% endif %}
 
             <div class="jumbotron">
-
                 {% if curr_question.type == "Free Text" %}
                     <textarea required type="text" name="{{ field.name }}" placeholder="{{ field.label }}" rows="8"
                               cols="80"></textarea>
@@ -65,10 +63,12 @@
             </div>
 
         </div>
-        <div id="button1_content">
+        <div id="button_submit">
             <button class="btn btn-lg btn-primary" id="button" href="" role="button" onclick="verify()" >Submit</button>
         </div>
-
+        <div id="button_next" style="visibility: hidden">
+            <button class="btn btn-lg btn-primary" id="button" href="" role="button" onclick="nextQue()" >Next</button>
+        </div>
 
 
         {#    <form method="post" action="{% url 'verify_answer' id=option.id %}">#}

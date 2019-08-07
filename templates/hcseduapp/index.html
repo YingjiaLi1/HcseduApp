@@ -10,7 +10,11 @@
     <div class="container">
         <p class="lead">Explore Human-Centred Security Here.</p>
         <h1>{{ bold_message }}</h1>
-        <p><a class="btn btn-lg btn-success" href="{% url 'question' %}" role="button">Start Training</a></p>
+        {% if user.is_authenticated %}
+            <p><a class="btn btn-lg btn-success" href="{% url 'question' %}" role="button">Start Training</a></p>
+        {% else %}
+            <p><a class="btn btn-lg btn-success" href="{% url 'login' %}" role="button">Start Training</a></p>
+        {% endif %}
         <p><a class="btn btn-lg " href="" role="button">Training History</a></p>
     </div>
   </div>

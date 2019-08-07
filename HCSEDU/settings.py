@@ -30,7 +30,9 @@ SECRET_KEY = 't(z$k&^%fw=n=d)w@&swc!8!o&z)!8%m0w3c+!=!yirmr+&_tn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://yingjiali.pythonanywhere.com']
+ALLOWED_HOSTS = ['yingjiali.pythonanywhere.com', '127.0.0.1']
+
+PASSWORD_HASHERS = [ 'django.contrib.auth.hashers.PBKDF2PasswordHasher', 'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher', ]
 
 
 # Application definition
@@ -54,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'HCSEDU.urls'
 
@@ -98,6 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 6, }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',

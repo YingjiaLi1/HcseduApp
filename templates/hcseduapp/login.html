@@ -1,0 +1,56 @@
+{% extends 'hcseduapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+  Login
+{% endblock %}
+
+
+{% block body_block %}
+
+  {% if registered %}
+      <strong>already logged in!</strong>
+      <a href="{% url 'index' %}">Return to the homepage.</a><br />
+  {% else %}
+
+  <div class="container">
+    <div class="jumbotron">
+      <h3 align="center">Login</h3>
+    {% for error in errors %}
+      <div class="alert alert-danger" role="alert">
+        <strong>Error</strong> {{error}}
+      </div>
+    {% endfor %}
+    </div>
+
+      <div class="row justify-content-center">
+          <form id="login_form" method="post" action="{% url 'login' %}">
+              {% csrf_token %}
+
+              <div class="row">
+                  <div class="col-lg-12">
+                      <div class="form-group">
+                          <input required type="text" class="form-control" name="username" size="50" placeholder="username">
+                      </div>
+                  </div>
+
+                  <div class="col-lg-12">
+                      <div class="form-group">
+                          <input required type="password" class="form-control" name="password" size="50" placeholder="password">
+                      </div>
+                  </div>
+              </div>
+
+              <div class="jumbotron">
+                      <button class="btn btn-lg btn-primary" type="submit" name="submit">Login</button>
+              </div>
+
+          </form>
+      </div>
+  </div>
+
+
+
+{% endif %}
+
+{% endblock %}
