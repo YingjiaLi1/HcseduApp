@@ -8,9 +8,11 @@
 {% block body_block %}
 <div class="container">
     {% if registered %}
-        <strong>Thank you for registering!</strong>
+        <div class="jumbotron">
+        <h4>Thank you for registering!</h4>
         <div >
-          <button class="btn btn-lg btn-primary" type="submit" name="submit"><a href="{% url 'login' %}">Login</a></button>
+          <button class="btn btn-lg btn-primary" type="submit" name="submit"><a style="color: #ffffff" href="{% url 'login' %}">Login</a></button>
+        </div>
         </div>
     {% else %}
 
@@ -19,12 +21,12 @@
             <h3  align="center">Sign up</h3>
           {% for error in user_form.errors %}
             <div class="alert alert-danger" role="alert">
-              <strong>Required</strong> {{error}}
+              <strong>Require Appropriate</strong> {{error}}
             </div>
           {% endfor %}
           {% for error in profile_form.errors %}
             <div class="alert alert-danger" role="alert">
-              <strong>Required</strong> {{error}}
+              <strong>Required Appropriate</strong> {{error}}
             </div>
           {% endfor %}
         </div>
@@ -51,11 +53,7 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="form-group">
-                        <input class="file-input-hide" id="input_picture" size="50" required type="file" accept="image/*" name="picture">
-                    </div>
-                </div>
+
 
 
                 <div class="jumbotron">
