@@ -47,7 +47,7 @@ function verify() {
                 answer_container.appendChild(answer_exp);
             }
 
-            if(que_exp){
+            if(que_exp != "null"){
                 var question_exp = document.createElement("p");
                 question_exp.className = "lead";
                 question_exp.innerText = "Generally:  "+que_exp;
