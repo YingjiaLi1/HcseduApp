@@ -1,0 +1,31 @@
+{% extends 'hcseduapp/base.html'%}
+{% load staticfiles %}
+  {% block title_block %}
+    Topics
+  {% endblock %}
+
+
+  {% block body_block %}
+  <div class="container-fluid">
+      <div class="row">
+        <nav class="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
+          <ul class="nav nav-pills flex-column">
+              {%  for topic in topics %}
+            <li class="nav-item">
+              <a class="nav-link" id="{{ topic.topic}}" href="javascript:void(0)" onclick="showTopic(event)">{{ topic.topic }} <span class="sr-only">(current)</span></a>
+            </li>
+              {% endfor %}
+
+          </ul>
+        </nav>
+
+        <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3" id="topic_content">
+
+        </main>
+      </div>
+        <script>setActive("Social Engineering")</script>
+      <script>showContent("Social Engineering")</script>
+
+    </div>
+  {% endblock %}
+

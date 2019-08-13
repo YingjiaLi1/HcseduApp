@@ -1,7 +1,8 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.models import User
 from hcseduapp.forms import UserForm, UserProfileForm
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
@@ -12,6 +13,7 @@ from hcseduapp.models import UserProfile, Topic, Question, Finished_Questions, F
     MultipleChoiceA, LinkedQ, LinkedA, AssertionReasonQ, AssertionReasonA
 import json;
 
+
 # Create your views here.
 
 def index(request):
@@ -19,10 +21,25 @@ def index(request):
     return render(request, 'hcseduapp/index.html', context=context_dict)
 
 
-def question(request):
+def topic(request):
+    topics = Topic.objects.all()
 
-    curr_question = Question.objects.filter(questionid=2)[0]
-    print(curr_question)
+    return render(request, 'hcseduapp/topic.html', {"topics": topics})
+
+
+@csrf_exempt
+def showTopic(request):
+    topic_name = request.GET.get('tarId')
+    curr_topic = Topic.objects.filter(topic=topic_name)[0]
+    topic_description = curr_topic.description
+
+    topic_info = (topic_name, topic_description)
+    return HttpResponse(json.dumps(topic_info))
+
+
+def question(request):
+    curr_question = Question.objects.filter(questionid=7)[0]
+    # print(curr_question.type)
     multi_options = MultipleChoiceQ.objects.filter(question=curr_question)
     assrea_options = AssertionReasonQ.objects.filter(question=curr_question)
 
@@ -36,18 +53,43 @@ def next_question(request):
 
     curr_question = Question.objects.filter(questionid=current_queid)[0]
     curr_topic = Topic.objects.filter(topic=curr_question.topic)[0].topic
-    print(curr_topic)
-    curr_question_jsonable = {"description": curr_question.description, "type": curr_question.type, "video": curr_question.video, "image": curr_question.image}
-    multi_options = MultipleChoiceQ.objects.filter(question=curr_question)
-    assrea_options = AssertionReasonQ.objects.filter(question=curr_question)
+    # print(curr_topic)
+    curr_type = curr_question.type
+    linkstatus = curr_question.linkedstatus
+    curr_link_status = curr_question.linkedstatus
+    curr_question_jsonable = {"description": curr_question.description, "type": curr_question.type,
+                              "video": curr_question.video, "image": curr_question.image, "questionid": curr_question.questionid}
 
-    m_opid = []
-    m_opno = []
-    m_opcontent = []
-    for m_option in multi_options:
+    # if linkstatus=="True":
+    #     linkqid = LinkedQ.objects.filter(opno=firstlink_opno)
+    #     linkedQ = Question.objects.get(questionid=linkqid)
+
+
+    if curr_type == "Multiple Choice":
+        multi_options = MultipleChoiceQ.objects.filter(question=curr_question)
+        m_opid = []
+        m_opno = []
+        m_opcontent = []
+        for m_option in multi_options:
             m_opid.append(m_option.id)
             m_opno.append(m_option.opno)
             m_opcontent.append(m_option.opcontent)
+
+        question = (curr_question_jsonable, curr_topic, m_opno, m_opcontent, m_opid, curr_link_status)
+
+    elif curr_type == "Assertion Reason":
+        assrea_options = AssertionReasonQ.objects.filter(question=curr_question)
+        ar_opid = []
+        ar_opno = []
+        ar_opcontent = []
+        for ar_option in assrea_options:
+            ar_opid.append(ar_option.id)
+            ar_opno.append(ar_option.opno)
+            ar_opcontent.append(ar_option.opcontent)
+
+        # print(ar_opcontent)
+        question = (curr_question_jsonable, curr_topic, ar_opno, ar_opcontent, ar_opid, curr_link_status)
+
 
     # multi_options_jsonable = {"opno": multi_options.opno, "opcontent": multi_options.opcontent}
 
@@ -56,7 +98,6 @@ def next_question(request):
     # ajax_question = serializers.serialize("json", curr_question)
 
     # multi_options_jsonable = (m_opno, m_opcontent)
-    question = (curr_question_jsonable, curr_topic, m_opno, m_opcontent, m_opid)
 
     return HttpResponse(json.dumps(question))
 
@@ -81,36 +122,127 @@ def next_question(request):
 def verify_answer(request):
     # print("test1")
     selected_option = str(request.GET.get('selectedOption'))
+    free_answer = str(request.GET.get('FreeAnswer'))
     # print(selected_option)
 
     answer_list = selected_option.split(",")
     queno = answer_list[0]
+    # firstlink_opno = answer_list[1]
     ori_question = Question.objects.get(questionid=queno)
     que_exp = ori_question.explanation
     queid = ori_question.id
-    multi_answers = MultipleChoiceA.objects.filter(question=queid)
-    assrea_answers = AssertionReasonA.objects.filter(question=queid)
-
+    linkstatus = ori_question.linkedstatus
+    que_type = ori_question.type
+    # freetext_answer = FreeTextQ.objects.filter(question=queid).update(text=free_answer)
+    # print("queid: " + queid.__str__())
+    # print("checkstatus"+firstlink_opno)
     score = 0
     explanation = []
-    for option in answer_list:
-        for m_option in multi_answers:
-            if option == m_option.opno:
-                score += m_option.opscore
-                explanation.append(m_option.explanation)
+    # print(linkstatus)
+
+    # if linkstatus:
+        # linkqid = LinkedQ.objects.filter(opno=firstlink_opno)
+        # linkedQ = Question.objects.get(questionid=linkqid)
+        #
+        # if que_type == "Multiple Choice":
+        #     linkq_answers = MultipleChoiceA.objects.filter(question=queid)
+        #     for option in answer_list:
+        #         for lk_option in linkq_answers:
+        #             if option == lk_option.opno:
+        #                 score += lk_option.opscore
+        #                 explanation.append(lk_option.explanation)
+        #
+    #         data = (selected_option, score, explanation, que_exp, que_type, linkstatus)
+    #
+    # else:
+    if que_type == "Free Text":
+        free_exp = FreeTextA.objects.filter(question=queid)[0].answer
+        free_score = FreeTextA.objects.filter(question=queid)[0].score
+        data = (score, free_exp, free_score, que_exp, que_type, linkstatus)
+
+    elif que_type == "Assertion Reason":
+        assrea_answers = AssertionReasonA.objects.filter(question=queid)
+        first_op = answer_list[1]
+        del answer_list[0: 2]
+        second_op = ','.join(answer_list)
+        print(first_op)
+
+        for ar_option in assrea_answers:
+            if first_op == ar_option.firstno:
+                explanation.append(ar_option.explanation)
+                print(explanation)
+                print(ar_option.secondno)
+                if second_op == ar_option.secondno:
+                    score += ar_option.score
+        data = (selected_option, score, explanation, que_exp, que_type, linkstatus)
+
+    elif que_type == "Multiple Choice":
+        multi_answers = MultipleChoiceA.objects.filter(question=queid)
+        for option in answer_list:
+            for m_option in multi_answers:
+                if option == m_option.opno:
+                    score += m_option.opscore
+                    explanation.append(m_option.explanation)
+
+        data = (selected_option, score, explanation, que_exp, que_type, linkstatus)
 
     # print(score)
     # print(explanation)
 
-    data = (selected_option, score, explanation, que_exp)
 
     return HttpResponse(json.dumps({"data": data}))
 
 
+@csrf_exempt
+def next_LinkQ(request):
+    selected_option = str(request.GET.get('selectedOption'))
+
+    answer_list = selected_option.split(",")
+    print("answer list:  "+str(selected_option))
+    queno = answer_list[0]
+    firstlink_opno = answer_list[1]
+
+    linkqid = LinkedQ.objects.filter(opno=firstlink_opno)[0].linkedid
+    print(str(linkqid))
+    linked_que = Question.objects.filter(questionid=str(linkqid))[0]
+    # print(str(linkedq.id))
+    linkedq_oriid = linked_que.id
+    linkq_topic = Topic.objects.get(topic=linked_que.topic).topic
+    linkq_type = linked_que.type
+    linkedQ_jsonable = {"description": linked_que.description, "type": linkq_type, "video": linked_que.video, "image":linked_que.image, "questionid":linked_que.questionid}
+
+    if linkq_type == "Multiple Choice":
+        link_multi_options = MultipleChoiceQ.objects.filter(question=linkedq_oriid)
+        link_opid = []
+        link_opno = []
+        link_opcontent = []
+        for link_option in link_multi_options:
+            link_opid.append(link_option.id)
+            link_opno.append(link_option.opno)
+            link_opcontent.append(link_option.opcontent)
+
+        linkinfo = (linkedQ_jsonable, linkq_topic, link_opno, link_opcontent, link_opid)
+
+    elif linkq_type == "Assertion Reason":
+        link_assrea_options = AssertionReasonQ.objects.filter(question=linkedq_oriid)
+        ar_opid = []
+        ar_opno = []
+        ar_opcontent = []
+        for ar_option in link_assrea_options:
+            ar_opid.append(ar_option.id)
+            ar_opno.append(ar_option.opno)
+            ar_opcontent.append(ar_option.opcontent)
+
+        # print(ar_opcontent)
+        linkinfo = (linkedQ_jsonable, linkq_topic, ar_opno, ar_opcontent, ar_opid)
+
+    return HttpResponse(json.dumps(linkinfo))
 
 
-
-
+@csrf_exempt
+def end_train(request):
+    current_queid = int(request.GET.get('currentQue'))
+    return HttpResponse(json.dumps({"data": current_queid}))
 
 
 def register(request):
@@ -120,16 +252,18 @@ def register(request):
         user_form = UserForm(data=request.POST)
         profile_form = UserProfileForm(data=request.POST)
 
-        if user_form.is_valid() and profile_form.is_valid() :
+        if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save(commit=True)
             user.set_password(user.password)
             user.save()
+
             profile = profile_form.save(commit=False)
             profile.user = user
 
             if 'picture' in request.FILES:
                 profile.picture = request.FILES['picture']
             profile.save()
+
             registered = True
 
         else:
@@ -138,7 +272,8 @@ def register(request):
         user_form = UserForm()
         profile_form = UserProfileForm()
 
-    return render(request,'hcseduapp/register.html', {'user_form': user_form, 'profile_form': profile_form, 'registered': registered})
+    return render(request, 'hcseduapp/register.html',
+                  {'user_form': user_form, 'profile_form': profile_form, 'registered': registered})
 
 
 def user_login(request):
@@ -150,14 +285,14 @@ def user_login(request):
         errors = {}
         if user:
             if user.is_active:
-                login(request,user)
+                login(request, user)
                 return HttpResponseRedirect(reverse('index'))
             else:
                 return HttpResponseRedirect("Your account is disabled")
         else:
-            errors = { "Invalid Username and/or Password" }
+            errors = {"Invalid Username and/or Password"}
 
-        return render(request, 'hcseduapp/login.html', { 'errors' : errors })
+        return render(request, 'hcseduapp/login.html', {'errors': errors})
     else:
         return render(request, 'hcseduapp/login.html', {})
 
@@ -167,3 +302,28 @@ def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('index'))
 
+
+@login_required
+def profile(request, username):
+    user = User.objects.get(username=username)
+    user_profile = UserProfile.objects.get(user=user)
+
+    if request.method == 'POST':
+        #user_form = UserForm(request.POST, instance=user)
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        if profile_form.is_valid():
+            #user_form.save()
+            profile_form.save()
+            #messages.success(request, _('Your profile was successfully updated!'))
+            #return redirect('settings:profile')
+            return redirect('profile', user.username)
+        else:
+            print(profile_form.errors)
+    else:
+        #user_form = UserForm(instance=user)
+        profile_form = UserProfileForm(instance=user_profile)
+    return render(request, 'hcseduapp/profile.html', {
+        'userprofile': user_profile,
+        'selecteduser': user,
+        'form' : profile_form
+    })

@@ -16,6 +16,7 @@ TOPIC_CHOICES = (
 TYPE_CHOICES = (
     ('default','Please select:'),
     ('Free Text','Free Text'),
+    ('Single Choice', 'Single Choice'),
     ('Multiple Choice','Multiple Choice'),
     ('Assertion Reason','Assertion Reason'),
 )
@@ -26,9 +27,9 @@ BOOL_CHOICES = ((True, 'Yes'), (False, 'No'))
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # name = models.CharField(max_length=30, blank=False)
-    picture = models.ImageField(upload_to='profile_images', blank=True)
+    picture = models.ImageField(upload_to='profile_images', default="default.jpg")
     email = models.EmailField(max_length=50,blank=True)
-    score = models.IntegerField(default=0)
+    score = models.IntegerField(default=0, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -107,13 +108,14 @@ class MultipleChoiceA(models.Model):
 
 class LinkedQ(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_id")
+    opno = models.CharField(max_length=10,default=None)
     linkedid = models.ForeignKey(Question, to_field="questionid", db_column="questionid", related_name="linked_question_id")
 
     class Meta:
         unique_together = (('question', 'linkedid'), )
 
     def __str__(self):
-        return str(self.question)
+        return str(self.linkedid)
 
 
 class LinkedA(models.Model):

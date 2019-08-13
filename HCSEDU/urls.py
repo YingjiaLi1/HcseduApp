@@ -26,7 +26,12 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^verify/$', views.verify_answer, name='verify_answer'),
     url(r'^nextQue/$', views.next_question, name='next_question'),
+    url(r'^nextLinkQ/$', views.next_LinkQ, name='next_LinkQ'),
+    url(r'^endTraining/$', views.end_train, name='end_train'),
     url(r'^register/$', views.register, name='register'),
     url(r'^login/$', views.user_login, name='login'),
     url(r'^logout/$', views.user_logout, name='logout'),
+    url(r'^topic/$', views.topic, name='topic'),
+    url(r'^showTopic/$', views.showTopic, name='show_topic'),
+    url(r'^profile/(?P<username>[\w\-]+)/$', views.profile, name='profile'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

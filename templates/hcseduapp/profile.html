@@ -1,0 +1,49 @@
+{% extends 'hcseduapp/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+  {{ selecteduser.username }} Profile
+{% endblock %}
+
+{% block body_block %}
+  <div class="container">
+      <div class="jumbotron">
+          <h4>{{ selecteduser.username }}'s Profile</h4>
+          {%  if userprofile.picture %}
+                <img src="{{ MEDIA_URL }}{{userprofile.picture }}" class="img-thumbnail" alt="{{selecteduser.username}}"/>
+          {%  endif %}
+      </div>
+
+      {% if selecteduser.username == user.username %}
+      <form method="post" action="." enctype="multipart/form-data">
+
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="row">
+              <div class="col-lg-12">
+                  <div class="form-group">
+                      {% if field.name == "score" %}
+                          <label for="score">Training Score: </label>
+                          <input readonly type="text" disabled style="border: 0px" class="form-control-plaintext" name="score" value=" {{ userprofile.score }} "></input>
+                      {% elif field.name == "email" %}
+                          <input  type="text" class="form-control" name="{{ field.name }}" value="{{ field.value }}" size="50" placeholder="{{ field.name }}">
+                      {% elif field.name == "picture" %}
+                          <label style="border: 0px" class="form-control" for="input_{{field.name}}">Click to select a picture: </label>
+                          <input class="file-input-hide" id="input_{{field.name}}" type="file" accept="image/*" name="{{ field.name }}"  placeholder="{{ field.label }}">
+                      {% endif %}
+                  </div>
+              </div>
+          </div>
+        {% endfor %}
+
+          <div class="jumbotron">
+                  <input class="btn btn-lg btn-primary" type="submit" value="Update" />
+          </div>
+      </form>
+
+      {% endif %}
+</div>
+
+
+  <div id="edit_profile"></div>
+{% endblock %}

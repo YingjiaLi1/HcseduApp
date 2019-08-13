@@ -8,7 +8,7 @@ class TopicAdmin(admin.ModelAdmin):
     list_display = ('topic', 'description')
 
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('questionid', 'description', 'topic', 'type', 'video', 'image', 'explanation')
+    list_display = ('questionid', 'description', 'topic', 'type', 'linkedstatus', 'video', 'image', 'explanation')
 
 class Finished_QuestionsAdmin(admin.ModelAdmin):
     list_display = ('user', 'question', 'score')
@@ -26,7 +26,7 @@ class MultipleChoiceAAdmin(admin.ModelAdmin):
     list_display = ('question', 'opno', 'opscore', 'explanation')
 
 class LinkedQAdmin(admin.ModelAdmin):
-    list_display = ('question', 'linkedid')
+    list_display = ('question', 'opno', 'linkedid')
 
 class LinkedAAdmin(admin.ModelAdmin):
     list_display = ('question', 'opno', 'linkedid', 'linkno', 'score', 'explanation')
