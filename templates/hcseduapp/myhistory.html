@@ -1,0 +1,55 @@
+{% extends 'hcseduapp/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+  My Training History
+{% endblock %}
+
+
+{% block body_block %}
+<!-- ##### Posts Area End ##### -->
+
+<!-- <div class="bueno-post-area mb-70"> -->
+    <div class="container">
+        <div class="jumbotron">
+            <h3 class="mb-50" align="center">My Training History</h3>
+
+
+              <div class="jumbotron">
+            <h5 class="mb-50" align="center">Overall Score: {{  totalscore }}</h5>
+
+              <table class="table" style="table-layout:fixed">
+                <thead class="table-active" align="center">
+                  <tr>
+                    <th class="text-center" width="100" >Question id</th>
+                    <th class="text-center" width="350" height="50" align="left">Description</th>
+                    <th class="text-center" width="200">My Answer</th>
+                    <th class="text-center" width="100">Score</th>
+
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for history in finished_ques %}
+                  <tr>
+                    <td width="100">{{ history.question.questionid }}</td>
+                    <td width="300" height="50" align="left">{{ history.question.description }}</td>
+                    <td width="200">{{ history.answer }}</td>
+                    <td width="100">{{ history.score }}</td>
+
+
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+
+        </div>
+    </div>
+
+
+<!-- </div> -->
+<!-- ##### Posts Area End ##### -->
+
+{% endblock %}

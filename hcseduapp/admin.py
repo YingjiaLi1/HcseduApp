@@ -23,7 +23,7 @@ class MultipleChoiceQAdmin(admin.ModelAdmin):
     list_display = ('question', 'opno', 'opcontent')
 
 class MultipleChoiceAAdmin(admin.ModelAdmin):
-    list_display = ('question', 'opno', 'opscore', 'explanation')
+    list_display = ('question', 'opno', 'opscore', 'explanation', 'video')
 
 class LinkedQAdmin(admin.ModelAdmin):
     list_display = ('question', 'opno', 'linkedid')

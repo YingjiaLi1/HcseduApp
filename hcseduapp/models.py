@@ -98,6 +98,8 @@ class MultipleChoiceA(models.Model):
     opno = models.CharField(max_length=10,default=None)
     opscore = models.IntegerField(blank=False, default=0)
     explanation = models.CharField(max_length=2000)
+    video = models.CharField(max_length=50, blank=True)
+
 
     class Meta:
         unique_together = (('question', 'opno'), )

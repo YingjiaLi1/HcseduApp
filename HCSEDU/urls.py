@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^register/$', views.register, name='register'),
     url(r'^login/$', views.user_login, name='login'),
     url(r'^logout/$', views.user_logout, name='logout'),
+    url(r'^myhistory/$', views.myhistory, name='myhistory'),
     url(r'^topic/$', views.topic, name='topic'),
     url(r'^showTopic/$', views.showTopic, name='show_topic'),
     url(r'^profile/(?P<username>[\w\-]+)/$', views.profile, name='profile'),

@@ -50,7 +50,7 @@ def question(request):
 @csrf_exempt
 def next_question(request):
     current_queid = int(request.GET.get('currentQue'))
-
+    # print("current q id: "+str(current_queid))
     curr_question = Question.objects.filter(questionid=current_queid)[0]
     curr_topic = Topic.objects.filter(topic=curr_question.topic)[0].topic
     # print(curr_topic)
@@ -60,9 +60,6 @@ def next_question(request):
     curr_question_jsonable = {"description": curr_question.description, "type": curr_question.type,
                               "video": curr_question.video, "image": curr_question.image, "questionid": curr_question.questionid}
 
-    # if linkstatus=="True":
-    #     linkqid = LinkedQ.objects.filter(opno=firstlink_opno)
-    #     linkedQ = Question.objects.get(questionid=linkqid)
 
 
     if curr_type == "Multiple Choice":
@@ -76,6 +73,19 @@ def next_question(request):
             m_opcontent.append(m_option.opcontent)
 
         question = (curr_question_jsonable, curr_topic, m_opno, m_opcontent, m_opid, curr_link_status)
+
+    elif curr_type == "Single Choice":
+        single_options = MultipleChoiceQ.objects.filter(question=curr_question)
+        sg_opid = []
+        sg_opno = []
+        sg_opcontent = []
+        for sg_option in single_options:
+            sg_opid.append(sg_option.id)
+            sg_opno.append(sg_option.opno)
+            sg_opcontent.append(sg_option.opcontent)
+
+            question = (curr_question_jsonable, curr_topic, sg_opno, sg_opcontent, sg_opid, curr_link_status)
+
 
     elif curr_type == "Assertion Reason":
         assrea_options = AssertionReasonQ.objects.filter(question=curr_question)
@@ -91,31 +101,9 @@ def next_question(request):
         question = (curr_question_jsonable, curr_topic, ar_opno, ar_opcontent, ar_opid, curr_link_status)
 
 
-    # multi_options_jsonable = {"opno": multi_options.opno, "opcontent": multi_options.opcontent}
-
-    # print(curr_question_jsonable)
-
-    # ajax_question = serializers.serialize("json", curr_question)
-
-    # multi_options_jsonable = (m_opno, m_opcontent)
 
     return HttpResponse(json.dumps(question))
 
-
-# @csrf_exempt
-# def next_question(request):
-#     current_queid = int(request.GET.get('currentQue'))
-#
-#     curr_question = Question.objects.filter(questionid=current_queid)[0]
-#     curr_question_jsonable = {"explanation": curr_question.explanation}
-#     multi_options = MultipleChoiceQ.objects.filter(question=curr_question)
-#     assrea_options = AssertionReasonQ.objects.filter(question=curr_question)
-#
-#     print(curr_question_jsonable)
-#
-#     # ajax_question = serializers.serialize("json", curr_question)
-#
-#     return HttpResponse(json.dumps(curr_question_jsonable))
 
 
 @csrf_exempt
@@ -123,11 +111,13 @@ def verify_answer(request):
     # print("test1")
     selected_option = str(request.GET.get('selectedOption'))
     free_answer = str(request.GET.get('FreeAnswer'))
-    # print(selected_option)
 
     answer_list = selected_option.split(",")
     queno = answer_list[0]
-    # firstlink_opno = answer_list[1]
+    # print(answer_list)
+    all_options = answer_list[1:]
+    # print("test: a"+(",".join(all_options)))
+    my_answers = ",".join(all_options)
     ori_question = Question.objects.get(questionid=queno)
     que_exp = ori_question.explanation
     queid = ori_question.id
@@ -138,26 +128,24 @@ def verify_answer(request):
     # print("checkstatus"+firstlink_opno)
     score = 0
     explanation = []
-    # print(linkstatus)
+    # print(free_answer)
 
-    # if linkstatus:
-        # linkqid = LinkedQ.objects.filter(opno=firstlink_opno)
-        # linkedQ = Question.objects.get(questionid=linkqid)
-        #
-        # if que_type == "Multiple Choice":
-        #     linkq_answers = MultipleChoiceA.objects.filter(question=queid)
-        #     for option in answer_list:
-        #         for lk_option in linkq_answers:
-        #             if option == lk_option.opno:
-        #                 score += lk_option.opscore
-        #                 explanation.append(lk_option.explanation)
-        #
-    #         data = (selected_option, score, explanation, que_exp, que_type, linkstatus)
-    #
-    # else:
+    curr_user = request.user
+    # print("username: "+curr_user)
+    question_finished = Finished_Questions.objects.filter(question=ori_question)
+
     if que_type == "Free Text":
         free_exp = FreeTextA.objects.filter(question=queid)[0].answer
         free_score = FreeTextA.objects.filter(question=queid)[0].score
+        # print("user_exist: "+user_exist)
+        # print("question_finished:"+question_finished))
+
+        if free_answer!="":
+            if question_finished:
+                    Finished_Questions.objects.filter(question=ori_question).update(answer=free_answer, score=free_score)
+            else:
+                Finished_Questions.objects.create(user=curr_user, question=ori_question, answer=free_answer, score=free_score)
+
         data = (score, free_exp, free_score, que_exp, que_type, linkstatus)
 
     elif que_type == "Assertion Reason":
@@ -165,15 +153,23 @@ def verify_answer(request):
         first_op = answer_list[1]
         del answer_list[0: 2]
         second_op = ','.join(answer_list)
-        print(first_op)
+        # print(first_op)
 
         for ar_option in assrea_answers:
             if first_op == ar_option.firstno:
                 explanation.append(ar_option.explanation)
-                print(explanation)
-                print(ar_option.secondno)
+                # print(explanation)
+                # print(ar_option.secondno)
                 if second_op == ar_option.secondno:
                     score += ar_option.score
+
+        if all_options:
+            if question_finished:
+                    Finished_Questions.objects.filter(question=ori_question).update(answer=my_answers, score=score)
+            else:
+                Finished_Questions.objects.create(user=curr_user, question=ori_question, answer=my_answers,
+                                                  score=score)
+
         data = (selected_option, score, explanation, que_exp, que_type, linkstatus)
 
     elif que_type == "Multiple Choice":
@@ -183,9 +179,32 @@ def verify_answer(request):
                 if option == m_option.opno:
                     score += m_option.opscore
                     explanation.append(m_option.explanation)
+                    video = m_option.video
+
+        if all_options:
+            if question_finished:
+                    Finished_Questions.objects.filter(question=ori_question).update(answer=my_answers, score=score)
+            else:
+                Finished_Questions.objects.create(user=curr_user, question=ori_question, answer=my_answers, score=score)
+
+        data = (selected_option, score, explanation, que_exp, que_type, linkstatus, video)
+
+
+    elif que_type == "Single Choice":
+        single_answers = MultipleChoiceA.objects.filter(question=queid)
+        for option in answer_list:
+            for sg_option in single_answers:
+                if option == sg_option.opno:
+                    score += sg_option.opscore
+                    explanation.append(sg_option.explanation)
+
+        if all_options:
+            if question_finished:
+                    Finished_Questions.objects.filter(question=ori_question).update(answer=my_answers, score=score)
+            else:
+                Finished_Questions.objects.create(user=curr_user, question=ori_question, answer=my_answers, score=score)
 
         data = (selected_option, score, explanation, que_exp, que_type, linkstatus)
-
     # print(score)
     # print(explanation)
 
@@ -198,12 +217,12 @@ def next_LinkQ(request):
     selected_option = str(request.GET.get('selectedOption'))
 
     answer_list = selected_option.split(",")
-    print("answer list:  "+str(selected_option))
+    # print("answer list:  "+str(selected_option))
     queno = answer_list[0]
     firstlink_opno = answer_list[1]
 
     linkqid = LinkedQ.objects.filter(opno=firstlink_opno)[0].linkedid
-    print(str(linkqid))
+    # print(str(linkqid))
     linked_que = Question.objects.filter(questionid=str(linkqid))[0]
     # print(str(linkedq.id))
     linkedq_oriid = linked_que.id
@@ -243,6 +262,17 @@ def next_LinkQ(request):
 def end_train(request):
     current_queid = int(request.GET.get('currentQue'))
     return HttpResponse(json.dumps({"data": current_queid}))
+
+
+def myhistory(request):
+    curr_user = request.user
+    finished_ques = Finished_Questions.objects.filter(user = curr_user)
+    # myQues = Question.objects.filter()
+    totalscore = 0
+    for que in finished_ques:
+        totalscore += que.score
+
+    return render(request, 'hcseduapp/myhistory.html', {'finished_ques': finished_ques, 'user': curr_user, 'totalscore': totalscore})
 
 
 def register(request):
