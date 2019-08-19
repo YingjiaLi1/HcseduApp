@@ -38,7 +38,7 @@ def showTopic(request):
 
 
 def question(request):
-    curr_question = Question.objects.filter(questionid=7)[0]
+    curr_question = Question.objects.filter(questionid=1)[0]
     # print(curr_question.type)
     multi_options = MultipleChoiceQ.objects.filter(question=curr_question)
     assrea_options = AssertionReasonQ.objects.filter(question=curr_question)
