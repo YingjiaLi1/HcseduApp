@@ -1,5 +1,5 @@
 from django.contrib import admin
-from hcseduapp.models import UserProfile,Topic, Question, Finished_Questions, FreeTextQ, FreeTextA, MultipleChoiceQ, MultipleChoiceA, LinkedQ, LinkedA, AssertionReasonQ, AssertionReasonA
+from hcseduapp.models import UserProfile,Topic, Question, Finished_Questions, FreeTextQ, FreeTextA, MultipleChoiceQ, MultipleChoiceA, LinkedQ, LinkedA, AssertionReasonQ, SingleOption, AssertionReasonA
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'email', 'picture', 'score')
@@ -18,6 +18,9 @@ class FreeTextQAdmin(admin.ModelAdmin):
 
 class FreeTextAAdmin(admin.ModelAdmin):
     list_display = ('question', 'answer', 'score')
+
+class SingleOptionAdmin(admin.ModelAdmin):
+    list_display = ('question', 'opno', 'opcontent','score')
 
 class MultipleChoiceQAdmin(admin.ModelAdmin):
     list_display = ('question', 'opno', 'opcontent')
@@ -46,6 +49,7 @@ admin.site.register(Question, QuestionAdmin)
 admin.site.register(Finished_Questions, Finished_QuestionsAdmin)
 admin.site.register(FreeTextQ, FreeTextQAdmin)
 admin.site.register(FreeTextA, FreeTextAAdmin)
+admin.site.register(SingleOption, SingleOptionAdmin)
 admin.site.register(MultipleChoiceQ, MultipleChoiceQAdmin)
 admin.site.register(MultipleChoiceA, MultipleChoiceAAdmin)
 admin.site.register(LinkedQ, LinkedQAdmin)

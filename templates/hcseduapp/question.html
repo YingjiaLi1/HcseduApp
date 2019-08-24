@@ -32,6 +32,19 @@
 
             <div >
                 {% if curr_question.type == "Free Text" %}
+                    {%  if curr_question.ifsingle %}
+                        {% for option in single_options %}
+                            <table class="table" width="300">
+                                <tbody>
+                                <tr>
+                                    <td width="50"><input class="radio" id="{{ option.id }}" type="radio" name="singleoption" value="{{ option.opno }}"></td>
+                                    <td align="left" width="50">{{ option.opno }}</td>
+                                    <td align="left">{{ option.opcontent }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        {% endfor %}
+                    {%  endif %}
                     <textarea required type="text" id = "freeanswer" name="{{ field.name }}" placeholder="{{ field.label }}" rows="8"
                               cols="80"></textarea>
                 {% elif curr_question.type == "Multiple Choice" %}
@@ -65,6 +78,9 @@
         <div id="all_button">
             <div id="button_submit">
                 <button class="btn btn-lg btn-primary" id="button" href="" role="button" onclick="verify()" >Submit</button>
+            </div>
+            <div id="button_withoutredo" style="visibility: hidden">
+                <button class="btn btn-lg btn-primary" id="button" href="" role="button" onclick="nextQue()" >Next</button>
             </div>
             <div id="button_next" style="visibility: hidden">
                 <button class="btn btn-lg btn-primary" id="button" href="" role="button" onclick="redoQue()" >Redo</button>

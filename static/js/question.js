@@ -5,21 +5,24 @@ function verify() {
     $("input[name='option']:checked").each(function () {
         oldnumber += ','+($(this).attr('value'));
     })
+    var singlechoice = $('input[name="singleoption"]:checked').val();
+
     var freeanswer = $('#freeanswer').val();
 
     var number = oldnumber.replace("Q. ", "");
     queId = Number(number[0]);
     var number_list = number.split(",");
     number_list.splice(0,1);
-    // alert(number_list)
+    // alert(singlechoice);
+
 
     $.ajax({
         type:"GET",
         url:"/verify",
-        data:{"selectedOption":number, "FreeAnswer":freeanswer},
+        data:{"selectedOption":number, "FreeAnswer":freeanswer, "singlechoice":singlechoice},
         dataType:"json",
         success: function (data) {
-            if((number_list.length==0)&&((freeanswer=="")||(freeanswer==undefined))){
+            if((number_list.length==0)&&((freeanswer=="")||(freeanswer==undefined))&&(singlechoice=="")){
                 // alert(number_list);
                 // alert(freeanswer);
                 alert("Please enter your answer!");
@@ -27,8 +30,9 @@ function verify() {
                 // alert(number_list);
                 // alert(freeanswer);
                 que_exp = data.data[3]
-            que_type = data.data[4]
-            que_status = data.data[5]
+                que_type = data.data[4]
+                que_status = data.data[5]
+                overall = data.data[6]
 
             // alert(freeanswer);
 
@@ -45,7 +49,7 @@ function verify() {
                     answer_sum.innerHTML = "Your answer is: " + freeanswer;
                     var answer_score = document.createElement("p");
                     answer_score.className = "lead";
-                    answer_score.innerText = "Score: " + free_score;
+                    answer_score.innerText = "Score: " + free_score + "/" + overall;
 
                     answer_container.appendChild(answer_sum);
                     answer_container.appendChild(answer_score);
@@ -61,7 +65,7 @@ function verify() {
                     selected_options.splice(0, 1)
                     score = data.data[1]
                     explanation = data.data[2]
-                    video = data.data[6]
+                    video = data.data[7]
                     len = explanation.length
 
 
@@ -70,7 +74,7 @@ function verify() {
                     answer_sum.innerText = "You selected: " + selected_options;
                     var answer_score = document.createElement("p");
                     answer_score.className = "lead";
-                    answer_score.innerText = "Score: " + score;
+                    answer_score.innerText = "Score: " + score + "/" + overall;
 
                     answer_container.appendChild(answer_sum);
                     answer_container.appendChild(answer_score);
@@ -113,7 +117,7 @@ function verify() {
                     answer_sum.innerText = "You selected: " + selected_options;
                     var answer_score = document.createElement("p");
                     answer_score.className = "lead";
-                    answer_score.innerText = "Score: " + score;
+                    answer_score.innerText = "Score: " + score + "/" + overall;
 
                     answer_container.appendChild(answer_sum);
                     answer_container.appendChild(answer_score);
@@ -140,23 +144,50 @@ function verify() {
                 $("#jumbotron_content").append(answer_container);
 
 
-                var button_submit = document.getElementById("button_submit");
-                button_submit.style.visibility = "hidden";
+                if(que_type == "Free Text"){
+                    var button_submit = document.getElementById("button_submit");
+                    button_submit.style.visibility = "hidden";
 
-                var button_next = document.getElementById("button_next");
-                button_next.style.visibility = "visible";
+                    var button_next = document.getElementById("button_next");
+                    button_next.style.visibility = "hidden";
 
-                var button_link = document.getElementById("button_link");
-                button_link.style.visibility = "hidden";
+                    var button_next = document.getElementById("button_withoutredo");
+                    button_next.style.visibility = "visible";
 
-                var button_last = document.getElementById("button_last");
-                button_last.style.visibility = "hidden";
+                    var button_link = document.getElementById("button_link");
+                    button_link.style.visibility = "hidden";
 
-                var button_next_last = document.getElementById("button_next_last");
-                button_next_last.style.visibility = "hidden";
+                    var button_last = document.getElementById("button_last");
+                    button_last.style.visibility = "hidden";
 
-                var button_end = document.getElementById("button_end");
-                button_end.style.visibility = "hidden";
+                    var button_next_last = document.getElementById("button_next_last");
+                    button_next_last.style.visibility = "hidden";
+
+                    var button_end = document.getElementById("button_end");
+                    button_end.style.visibility = "hidden";
+                }else{
+                    var button_submit = document.getElementById("button_submit");
+                    button_submit.style.visibility = "hidden";
+
+                    var button_next = document.getElementById("button_next");
+                    button_next.style.visibility = "visible";
+
+                    var button_next = document.getElementById("button_withoutredo");
+                        button_next.style.visibility = "hidden";
+
+                    var button_link = document.getElementById("button_link");
+                    button_link.style.visibility = "hidden";
+
+                    var button_last = document.getElementById("button_last");
+                    button_last.style.visibility = "hidden";
+
+                    var button_next_last = document.getElementById("button_next_last");
+                    button_next_last.style.visibility = "hidden";
+
+                    var button_end = document.getElementById("button_end");
+                    button_end.style.visibility = "hidden";
+                }
+
             }
 
 
@@ -395,6 +426,9 @@ function nextQue(){
                     var button_next = document.getElementById("button_next");
                     button_next.style.visibility = "hidden";
 
+                    var button_next = document.getElementById("button_withoutredo");
+                    button_next.style.visibility = "hidden";
+
                     var button_link = document.getElementById("button_link");
                     button_link.style.visibility = "visible";
 
@@ -412,6 +446,9 @@ function nextQue(){
                     button_submit.style.visibility = "visible";
 
                     var button_next = document.getElementById("button_next");
+                    button_next.style.visibility = "hidden";
+
+                    var button_next = document.getElementById("button_withoutredo");
                     button_next.style.visibility = "hidden";
 
                     var button_link = document.getElementById("button_link");
@@ -659,6 +696,9 @@ function redoQue(){
                     var button_next = document.getElementById("button_next");
                     button_next.style.visibility = "hidden";
 
+                    var button_next = document.getElementById("button_withoutredo");
+                    button_next.style.visibility = "hidden";
+
                     var button_link = document.getElementById("button_link");
                     button_link.style.visibility = "visible";
 
@@ -676,6 +716,9 @@ function redoQue(){
                     button_submit.style.visibility = "visible";
 
                     var button_next = document.getElementById("button_next");
+                    button_next.style.visibility = "hidden";
+
+                    var button_next = document.getElementById("button_withoutredo");
                     button_next.style.visibility = "hidden";
 
                     var button_link = document.getElementById("button_link");
@@ -1087,6 +1130,8 @@ function next_LinkedQ(){
             }
             $("#button_submit").children().remove();
             $("#button_next").children().remove();
+            $("#button_withoutredo").children().remove();
+
 
 
             var button_link = document.getElementById("button_link");
@@ -1228,6 +1273,7 @@ function verify_end(){
 
                 $("#button_submit").children().remove();
                 $("#button_next").children().remove();
+                $("#button_withoutredo").children().remove();
 
 
                 var button_link = document.getElementById("button_link");
@@ -1274,6 +1320,7 @@ function showEnd(){
 
                 $("#button_submit").children().remove();
                 $("#button_next").children().remove();
+                $("#button_withoutredo").children().remove();
                 $("#button_link").children().remove();
                 $("#button_last").children().remove();
                 $("#button_next_last").children().remove();

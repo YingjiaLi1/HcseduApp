@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from itertools import chain
 from hcseduapp.models import UserProfile, Topic, Question, Finished_Questions, FreeTextQ, FreeTextA, MultipleChoiceQ, \
-    MultipleChoiceA, LinkedQ, LinkedA, AssertionReasonQ, AssertionReasonA
+    MultipleChoiceA, LinkedQ, LinkedA, AssertionReasonQ, AssertionReasonA, SingleOption
 import json;
 
 
@@ -42,9 +42,11 @@ def question(request):
     # print(curr_question.type)
     multi_options = MultipleChoiceQ.objects.filter(question=curr_question)
     assrea_options = AssertionReasonQ.objects.filter(question=curr_question)
+    if curr_question.ifsingle:
+        single_options = SingleOption.objects.filter(question=curr_question)
 
     return render(request, 'hcseduapp/question.html',
-                  {'curr_question': curr_question, 'multi_options': multi_options, 'assrea_options': assrea_options, })
+                  {'curr_question': curr_question, 'multi_options': multi_options, 'assrea_options': assrea_options, 'single_options': single_options})
 
 
 @csrf_exempt
@@ -100,8 +102,6 @@ def next_question(request):
         # print(ar_opcontent)
         question = (curr_question_jsonable, curr_topic, ar_opno, ar_opcontent, ar_opid, curr_link_status)
 
-
-
     return HttpResponse(json.dumps(question))
 
 
@@ -111,6 +111,7 @@ def verify_answer(request):
     # print("test1")
     selected_option = str(request.GET.get('selectedOption'))
     free_answer = str(request.GET.get('FreeAnswer'))
+    single_choice = str(request.GET.get('singlechoice'))
 
     answer_list = selected_option.split(",")
     queno = answer_list[0]
@@ -127,26 +128,41 @@ def verify_answer(request):
     # print("queid: " + queid.__str__())
     # print("checkstatus"+firstlink_opno)
     score = 0
+    overall = 0
     explanation = []
-    # print(free_answer)
+    free_score = 0
+    # print(single_choice)
 
     curr_user = request.user
-    # print("username: "+curr_user)
-    question_finished = Finished_Questions.objects.filter(question=ori_question)
+    print("username: "+str(all_options))
+    # finished_user = Finished_Questions.objects.filter(user=curr_user)
+    question_finished = Finished_Questions.objects.filter(question=ori_question.id, user=curr_user)
 
     if que_type == "Free Text":
-        free_exp = FreeTextA.objects.filter(question=queid)[0].answer
-        free_score = FreeTextA.objects.filter(question=queid)[0].score
+        if ori_question.ifsingle:
+            single_answers = SingleOption.objects.filter(question=queid)
+            for s_option in single_answers:
+                overall += s_option.score
+                if single_choice == s_option.opno:
+                    free_score += s_option.score
+
+            free_exp = FreeTextA.objects.filter(question=queid)[0].answer
+        else:
+            free_exp = FreeTextA.objects.filter(question=queid)[0].answer
+            free_score = FreeTextA.objects.filter(question=queid)[0].score
+            overall = FreeTextA.objects.filter(question=queid)[0].score
         # print("user_exist: "+user_exist)
         # print("question_finished:"+question_finished))
 
         if free_answer!="":
             if question_finished:
-                    Finished_Questions.objects.filter(question=ori_question).update(answer=free_answer, score=free_score)
+                question_finished.update(answer=free_answer, score=free_score)
+                print("updated")
             else:
                 Finished_Questions.objects.create(user=curr_user, question=ori_question, answer=free_answer, score=free_score)
+                print("updated")
 
-        data = (score, free_exp, free_score, que_exp, que_type, linkstatus)
+        data = (score, free_exp, free_score, que_exp, que_type, linkstatus, overall)
 
     elif que_type == "Assertion Reason":
         assrea_answers = AssertionReasonA.objects.filter(question=queid)
@@ -156,6 +172,7 @@ def verify_answer(request):
         # print(first_op)
 
         for ar_option in assrea_answers:
+            overall += ar_option.score
             if first_op == ar_option.firstno:
                 explanation.append(ar_option.explanation)
                 # print(explanation)
@@ -165,15 +182,21 @@ def verify_answer(request):
 
         if all_options:
             if question_finished:
-                    Finished_Questions.objects.filter(question=ori_question).update(answer=my_answers, score=score)
+                question_finished.update(answer=my_answers, score=score)
+                print("updated")
+
             else:
                 Finished_Questions.objects.create(user=curr_user, question=ori_question, answer=my_answers,
                                                   score=score)
+                print("updated")
 
-        data = (selected_option, score, explanation, que_exp, que_type, linkstatus)
+
+        data = (selected_option, score, explanation, que_exp, que_type, linkstatus, overall)
 
     elif que_type == "Multiple Choice":
         multi_answers = MultipleChoiceA.objects.filter(question=queid)
+        for m_option in multi_answers:
+            overall += m_option.opscore
         for option in answer_list:
             for m_option in multi_answers:
                 if option == m_option.opno:
@@ -183,32 +206,18 @@ def verify_answer(request):
 
         if all_options:
             if question_finished:
-                    Finished_Questions.objects.filter(question=ori_question).update(answer=my_answers, score=score)
+                question_finished.update(answer=my_answers, score=score)
+                print("updated")
+
             else:
                 Finished_Questions.objects.create(user=curr_user, question=ori_question, answer=my_answers, score=score)
+                print("updated")
 
-        data = (selected_option, score, explanation, que_exp, que_type, linkstatus, video)
 
+        data = (selected_option, score, explanation, que_exp, que_type, linkstatus, overall, video)
 
-    elif que_type == "Single Choice":
-        single_answers = MultipleChoiceA.objects.filter(question=queid)
-        for option in answer_list:
-            for sg_option in single_answers:
-                if option == sg_option.opno:
-                    score += sg_option.opscore
-                    explanation.append(sg_option.explanation)
-
-        if all_options:
-            if question_finished:
-                    Finished_Questions.objects.filter(question=ori_question).update(answer=my_answers, score=score)
-            else:
-                Finished_Questions.objects.create(user=curr_user, question=ori_question, answer=my_answers, score=score)
-
-        data = (selected_option, score, explanation, que_exp, que_type, linkstatus)
     # print(score)
     # print(explanation)
-
-
     return HttpResponse(json.dumps({"data": data}))
 
 

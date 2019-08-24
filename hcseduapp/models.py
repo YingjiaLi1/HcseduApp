@@ -52,6 +52,7 @@ class Question(models.Model):
     video = models.CharField(max_length=50, blank=True)
     image = models.CharField(max_length=50, blank=True)
     explanation = models.CharField(max_length=2000, blank=True, default="null")
+    ifsingle = models.BooleanField(choices=BOOL_CHOICES, default=False)
 
     def __str__(self):
         return str(self.questionid)
@@ -78,6 +79,16 @@ class FreeTextQ(models.Model):
 class FreeTextA(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer = models.CharField(max_length=2000)
+    score = models.IntegerField(blank=False, default=0)
+
+    def __str__(self):
+        return str(self.question)
+
+
+class SingleOption(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    opno = models.CharField(max_length=10,default=None)
+    opcontent = models.CharField(max_length=200)
     score = models.IntegerField(blank=False, default=0)
 
     def __str__(self):
