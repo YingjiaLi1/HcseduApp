@@ -1175,8 +1175,9 @@ function verify_end(){
                 alert("Please enter your answer!");
             }else{
                 que_exp = data.data[3]
-            que_type = data.data[4]
-            que_status = data.data[5]
+                que_type = data.data[4]
+                que_status = data.data[5]
+                overall = data.data[6]
 
             // alert(freeanswer);
 
@@ -1193,7 +1194,7 @@ function verify_end(){
                     answer_sum.innerHTML = "Your answer is: " + freeanswer;
                     var answer_score = document.createElement("p");
                     answer_score.className = "lead";
-                    answer_score.innerText = "Score: " + free_score;
+                    answer_score.innerText = "Score: " + free_score + "/" + overall;
 
                     answer_container.appendChild(answer_sum);
                     answer_container.appendChild(answer_score);
@@ -1217,7 +1218,7 @@ function verify_end(){
                     answer_sum.innerText = "You selected: " + selected_options;
                     var answer_score = document.createElement("p");
                     answer_score.className = "lead";
-                    answer_score.innerText = "Score: " + score;
+                    answer_score.innerText = "Score: " + score + "/" + overall;
 
                     answer_container.appendChild(answer_sum);
                     answer_container.appendChild(answer_score);
@@ -1245,7 +1246,7 @@ function verify_end(){
                     answer_sum.innerText = "You selected: " + selected_options;
                     var answer_score = document.createElement("p");
                     answer_score.className = "lead";
-                    answer_score.innerText = "Score: " + score;
+                    answer_score.innerText = "Score: " + score + "/" + overall;
 
                     answer_container.appendChild(answer_sum);
                     answer_container.appendChild(answer_score);
