@@ -1302,7 +1302,6 @@ function showEnd(){
     var currentQue  = ++ queId;
     var endFlag = true;
     var lastQid=currentQue-1;
-    // alert(currentQue+","+lastQid);
 
      $.ajax({
             type:"GET",
@@ -1326,20 +1325,6 @@ function showEnd(){
                 $("#button_last").children().remove();
                 $("#button_next_last").children().remove();
 
-                // var button_submit = document.getElementById("button_submit");
-                // button_submit.style.visibility = "hidden";
-                //
-                // var button_next = document.getElementById("button_next");
-                // button_next.style.visibility = "hidden";
-                //
-                // var button_link = document.getElementById("button_link");
-                // button_link.style.visibility = "hidden";
-                //
-                // var button_last = document.getElementById("button_last");
-                // button_last.style.visibility = "hidden";
-                //
-                // var button_next_last = document.getElementById("button_next_last");
-                // button_next_last.style.visibility = "hidden";
 
                 var button_end = document.getElementById("button_end");
                 button_end.style.visibility = "visible";
@@ -1352,7 +1337,6 @@ function showEnd(){
 function showTopic(){
     var e = e ? e : window.event;
     var tar = e.srcElement || e.target;
-    // var tarClass = tar.className;
     var tarId = tar.id;
     setActive(tarId);
     showContent(tarId);

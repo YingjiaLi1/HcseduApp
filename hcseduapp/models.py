@@ -68,14 +68,6 @@ class Finished_Questions(models.Model):
         return self
 
 
-class FreeTextQ(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    text = models.CharField(max_length=2000)
-
-    def __str__(self):
-        return self
-
-
 class FreeTextA(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer = models.CharField(max_length=2000)
@@ -129,21 +121,6 @@ class LinkedQ(models.Model):
 
     def __str__(self):
         return str(self.linkedid)
-
-
-class LinkedA(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_answer_id")
-    opno = models.CharField(max_length=10,default=None)
-    linkedid = models.ForeignKey(Question, to_field="questionid", db_column="questionid", related_name="linked_question_answer_id")
-    linkno = models.CharField(max_length=10,default=None)
-    score = models.IntegerField(blank=False, default=0)
-    explanation = models.CharField(max_length=2000)
-
-    class Meta:
-        unique_together = (('question', 'opno', 'linkedid', 'linkno'), )
-
-    def __str__(self):
-        return str(self.question)
 
 
 class AssertionReasonQ(models.Model):

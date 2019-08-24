@@ -7,10 +7,8 @@ from hcseduapp.forms import UserForm, UserProfileForm
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
-from itertools import chain
-from hcseduapp.models import UserProfile, Topic, Question, Finished_Questions, FreeTextQ, FreeTextA, MultipleChoiceQ, \
-    MultipleChoiceA, LinkedQ, LinkedA, AssertionReasonQ, AssertionReasonA, SingleOption
+from hcseduapp.models import UserProfile, Topic, Question, Finished_Questions, FreeTextA, MultipleChoiceQ, \
+    MultipleChoiceA, LinkedQ, AssertionReasonQ, AssertionReasonA, SingleOption
 import json;
 
 
@@ -39,7 +37,6 @@ def showTopic(request):
 
 def question(request):
     curr_question = Question.objects.filter(questionid=1)[0]
-    # print(curr_question.type)
     multi_options = MultipleChoiceQ.objects.filter(question=curr_question)
     assrea_options = AssertionReasonQ.objects.filter(question=curr_question)
     if curr_question.ifsingle:
@@ -108,7 +105,6 @@ def next_question(request):
 
 @csrf_exempt
 def verify_answer(request):
-    # print("test1")
     selected_option = str(request.GET.get('selectedOption'))
     free_answer = str(request.GET.get('FreeAnswer'))
     single_choice = str(request.GET.get('singlechoice'))
@@ -124,9 +120,7 @@ def verify_answer(request):
     queid = ori_question.id
     linkstatus = ori_question.linkedstatus
     que_type = ori_question.type
-    # freetext_answer = FreeTextQ.objects.filter(question=queid).update(text=free_answer)
-    # print("queid: " + queid.__str__())
-    # print("checkstatus"+firstlink_opno)
+
     score = 0
     overall = 0
     explanation = []
@@ -135,7 +129,6 @@ def verify_answer(request):
 
     curr_user = request.user
     print("username: "+str(all_options))
-    # finished_user = Finished_Questions.objects.filter(user=curr_user)
     question_finished = Finished_Questions.objects.filter(question=ori_question.id, user=curr_user)
 
     if que_type == "Free Text":
@@ -151,8 +144,7 @@ def verify_answer(request):
             free_exp = FreeTextA.objects.filter(question=queid)[0].answer
             free_score = FreeTextA.objects.filter(question=queid)[0].score
             overall = FreeTextA.objects.filter(question=queid)[0].score
-        # print("user_exist: "+user_exist)
-        # print("question_finished:"+question_finished))
+
 
         if free_answer!="":
             if question_finished:
@@ -176,7 +168,6 @@ def verify_answer(request):
             if first_op == ar_option.firstno:
                 explanation.append(ar_option.explanation)
                 # print(explanation)
-                # print(ar_option.secondno)
                 if second_op == ar_option.secondno:
                     score += ar_option.score
 
@@ -189,7 +180,6 @@ def verify_answer(request):
                 Finished_Questions.objects.create(user=curr_user, question=ori_question, answer=my_answers,
                                                   score=score)
                 print("updated")
-
 
         data = (selected_option, score, explanation, que_exp, que_type, linkstatus, overall)
 
@@ -212,7 +202,6 @@ def verify_answer(request):
             else:
                 Finished_Questions.objects.create(user=curr_user, question=ori_question, answer=my_answers, score=score)
                 print("updated")
-
 
         data = (selected_option, score, explanation, que_exp, que_type, linkstatus, overall, video)
 
@@ -276,7 +265,6 @@ def end_train(request):
 def myhistory(request):
     curr_user = request.user
     finished_ques = Finished_Questions.objects.filter(user = curr_user)
-    # myQues = Question.objects.filter()
     totalscore = 0
     for que in finished_ques:
         totalscore += que.score
@@ -348,18 +336,15 @@ def profile(request, username):
     user_profile = UserProfile.objects.get(user=user)
 
     if request.method == 'POST':
-        #user_form = UserForm(request.POST, instance=user)
         profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
         if profile_form.is_valid():
             #user_form.save()
             profile_form.save()
-            #messages.success(request, _('Your profile was successfully updated!'))
-            #return redirect('settings:profile')
+
             return redirect('profile', user.username)
         else:
             print(profile_form.errors)
     else:
-        #user_form = UserForm(instance=user)
         profile_form = UserProfileForm(instance=user_profile)
     return render(request, 'hcseduapp/profile.html', {
         'userprofile': user_profile,

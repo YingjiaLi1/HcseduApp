@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from hcseduapp.models import UserProfile,Topic, Question, Finished_Questions, FreeTextQ, FreeTextA, MultipleChoiceQ, MultipleChoiceA, LinkedQ, LinkedA, AssertionReasonQ, AssertionReasonA
+from hcseduapp.models import UserProfile,Topic, Question, Finished_Questions,FreeTextA, MultipleChoiceQ, MultipleChoiceA, LinkedQ, AssertionReasonQ, AssertionReasonA
 from django.forms.widgets import RadioSelect
 
 
