@@ -62,7 +62,7 @@
         </ul>
         <form class="form-inline mt-2 mt-md-0">
             {% if user.is_authenticated %}
-            <a class="nav-link" href="{% url 'profile' user.username %}">{{ user.username }} Profiles</a>
+            <a class="nav-link" href="{% url 'profile' user.username %}">{{ user.username }}'s Profile</a>
             <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'logout' %}">Logout</a>
             {% else %}
             <a class="btn btn-outline-success my-2 my-sm-0" href="{% url 'register' %}">Register</a>

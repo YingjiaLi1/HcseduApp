@@ -56,6 +56,7 @@ function verify() {
 
                     var answer_exp = document.createElement("div");
                     answer_exp.className = "lead";
+                    answer_exp.style = "text-align: left";
                     answer_exp.innerHTML = free_exp;
                     answer_container.appendChild(answer_exp);
 
@@ -96,6 +97,7 @@ function verify() {
                     for (var i = 0; i < len; i++) {
                         var answer_exp = document.createElement("div");
                         answer_exp.className = "lead";
+                        answer_exp.style = "text-align: left";
                         answer_exp.innerHTML = selected_options[i] + ":    " + explanation[i];
                         var new_line = document.createElement("p");
                         new_line.className = "card-text";
@@ -125,6 +127,7 @@ function verify() {
                     for (var i = 0; i < len; i++) {
                         var answer_exp = document.createElement("div");
                         answer_exp.className = "lead";
+                        answer_exp.style = "text-align: left";
                         answer_exp.innerHTML = explanation[i];
                         var new_line = document.createElement("p");
                         new_line.className = "card-text";
@@ -233,6 +236,7 @@ function nextQue(){
 
                 var queDescription = document.createElement("div");
                 queDescription.className = "lead";
+                queDescription.align = "left";
                 queDescription.innerHTML = currentDescription;
                 $("#jumbotron_content").append(queDescription);
 
