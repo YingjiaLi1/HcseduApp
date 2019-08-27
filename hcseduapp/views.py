@@ -162,13 +162,13 @@ def verify_answer(request):
         del answer_list[0: 2]
         second_op = ','.join(answer_list)
         # print(first_op)
+        overall = 5
 
         for ar_option in assrea_answers:
-            overall += ar_option.score
             if first_op == ar_option.firstno:
-                explanation.append(ar_option.explanation)
                 # print(explanation)
                 if second_op == ar_option.secondno:
+                    explanation.append(ar_option.explanation)
                     score += ar_option.score
 
         if all_options:
