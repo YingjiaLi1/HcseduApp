@@ -125,10 +125,11 @@ def verify_answer(request):
     overall = 0
     explanation = []
     free_score = 0
-    # print(single_choice)
+    print("single"+single_choice)
+    print("freetext"+free_answer)
 
     curr_user = request.user
-    print("username: "+str(all_options))
+    print("selected: "+selected_option)
     question_finished = Finished_Questions.objects.filter(question=ori_question.id, user=curr_user)
 
     if que_type == "Free Text":
@@ -139,12 +140,21 @@ def verify_answer(request):
                 if single_choice == s_option.opno:
                     free_score += s_option.score
 
+            if "email address" in free_answer:
+                free_score += 1
+            if "greeting" in free_answer:
+                free_score += 1
+            if "grammer" in free_answer:
+                free_score += 1
+            if "link" in free_answer:
+                free_score += 1
+
             free_exp = FreeTextA.objects.filter(question=queid)[0].answer
+            overall = FreeTextA.objects.filter(question=queid)[0].score
         else:
             free_exp = FreeTextA.objects.filter(question=queid)[0].answer
             free_score = FreeTextA.objects.filter(question=queid)[0].score
             overall = FreeTextA.objects.filter(question=queid)[0].score
-
 
         if free_answer!="":
             if question_finished:
@@ -167,8 +177,9 @@ def verify_answer(request):
         for ar_option in assrea_answers:
             if first_op == ar_option.firstno:
                 # print(explanation)
-                if second_op == ar_option.secondno:
+                if(len(explanation)==0):
                     explanation.append(ar_option.explanation)
+                if second_op == ar_option.secondno:
                     score += ar_option.score
 
         if all_options:

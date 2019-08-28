@@ -14,6 +14,7 @@ function verify() {
     var number_list = number.split(",");
     number_list.splice(0,1);
     // alert(singlechoice);
+    // alert(freeanswer);
 
 
     $.ajax({
@@ -22,7 +23,7 @@ function verify() {
         data:{"selectedOption":number, "FreeAnswer":freeanswer, "singlechoice":singlechoice},
         dataType:"json",
         success: function (data) {
-            if((number_list.length==0)&&((freeanswer=="")||(freeanswer==undefined))&&(singlechoice=="")){
+            if((number_list.length==0)&&(((freeanswer=="")||(freeanswer==undefined))||(singlechoice=='None'))){
                 // alert(number_list);
                 // alert(freeanswer);
                 alert("Please enter your answer!");
