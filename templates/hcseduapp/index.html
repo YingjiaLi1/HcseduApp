@@ -15,7 +15,7 @@
         {% else %}
             <p><a class="btn btn-lg btn-success" href="{% url 'login' %}" role="button">Start Training</a></p>
         {% endif %}
-        <p><a class="btn btn-lg " href="" role="button">Training History</a></p>
+        <p><a class="btn btn-lg " href="{% url 'myhistory' %}" role="button">Training History</a></p>
     </div>
   </div>
   {% endblock %}
