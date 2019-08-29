@@ -17,7 +17,7 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ('picture', 'email', 'score',)
+        fields = ('picture', 'email',)
         # exclude = ('score','user',)
 
 

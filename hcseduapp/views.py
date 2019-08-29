@@ -280,6 +280,9 @@ def myhistory(request):
     for que in finished_ques:
         totalscore += que.score
 
+    user_profile = UserProfile.objects.filter(user = curr_user)[0]
+    user_profile.score=totalscore
+
     return render(request, 'hcseduapp/myhistory.html', {'finished_ques': finished_ques, 'user': curr_user, 'totalscore': totalscore})
 
 
